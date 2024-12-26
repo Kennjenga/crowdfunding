@@ -1,8 +1,9 @@
 // app/page.tsx
 "use client";
-
+// app/page.tsx
 import { Profile } from "@/components/profile";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { CrowdfundingUI } from "@/components/CreateCampaignForm";
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
         />
       </div>
       <Profile />
+      <CrowdfundingUI />
     </div>
   );
 }
