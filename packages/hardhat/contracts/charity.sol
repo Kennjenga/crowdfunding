@@ -19,9 +19,9 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         uint256 targetAmount;
         uint256 raisedAmount;
         address owner;
-        bool isCompleted;
-        uint256 createdAt;
         uint256 deadline;
+        bool isCompleted;
+        bool fundsWithdrawn; // Tracks if funds have been withdrawn
     }
 
     struct Donation {
@@ -30,12 +30,10 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         uint256 timestamp;
     }
 
-    // Mappings
-    mapping(uint256 => Campaign) public campaigns;
-    mapping(uint256 => Donation[]) public campaignDonations;
-    mapping(uint256 => mapping(address => uint256)) public donorContributions;
+    mapping(uint256 => Campaign) private campaigns;
+    mapping(uint256 => Donation[]) private campaignDonations;
+    mapping(uint256 => mapping(address => uint256)) private donorContributions;
 
-    // Events
     event CampaignCreated(
         uint256 indexed campaignId,
         string title,
@@ -43,49 +41,32 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         uint256 targetAmount,
         uint256 deadline
     );
-
     event DonationReceived(
         uint256 indexed campaignId,
         address indexed donor,
         uint256 amount
     );
-
     event FundsWithdrawn(
         uint256 indexed campaignId,
         address indexed owner,
         uint256 amount
     );
-
     event CampaignCompleted(uint256 indexed campaignId, uint256 totalRaised);
 
-    // Constructor
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(CAMPAIGN_CREATOR_ROLE, msg.sender);
     }
 
-    // Modifiers
-    modifier validCampaign(uint256 campaignId) {
-        require(
-            campaigns[campaignId].owner != address(0),
-            "Campaign does not exist"
-        );
+    modifier campaignExists(uint256 campaignId) {
+        require(campaignId < _campaignIds.current(), "Campaign does not exist");
         _;
     }
 
-    modifier onlyCampaignOwner(uint256 campaignId) {
-        require(
-            campaigns[campaignId].owner == msg.sender,
-            "Not campaign owner"
-        );
-        _;
-    }
-
-    // Functions
     function createCampaign(
         string memory title,
         string memory description,
-        uint256 targetAmountInEther, // Now explicitly in Ether
+        uint256 targetAmountInEther,
         uint256 durationInDays
     ) external onlyRole(CAMPAIGN_CREATOR_ROLE) returns (uint256) {
         require(bytes(title).length > 0, "Title cannot be empty");
@@ -101,21 +82,24 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         uint256 campaignId = _campaignIds.current();
         _campaignIds.increment();
 
-        Campaign storage newCampaign = campaigns[campaignId];
-        newCampaign.id = campaignId;
-        newCampaign.title = title;
-        newCampaign.description = description;
-        newCampaign.targetAmount = targetAmountInEther * 1 ether; // Convert to Wei
-        newCampaign.owner = msg.sender;
-        newCampaign.createdAt = block.timestamp;
-        newCampaign.deadline = block.timestamp + (durationInDays * 1 days);
+        campaigns[campaignId] = Campaign({
+            id: campaignId,
+            title: title,
+            description: description,
+            targetAmount: targetAmountInEther * 1 ether,
+            raisedAmount: 0,
+            owner: msg.sender,
+            deadline: block.timestamp + (durationInDays * 1 days),
+            isCompleted: false,
+            fundsWithdrawn: false
+        });
 
         emit CampaignCreated(
             campaignId,
             title,
             msg.sender,
-            newCampaign.targetAmount,
-            newCampaign.deadline
+            targetAmountInEther * 1 ether,
+            block.timestamp + (durationInDays * 1 days)
         );
 
         return campaignId;
@@ -123,9 +107,9 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
 
     function donateToCampaign(
         uint256 campaignId
-    ) external payable nonReentrant validCampaign(campaignId) {
+    ) external payable nonReentrant campaignExists(campaignId) {
         Campaign storage campaign = campaigns[campaignId];
-        require(!campaign.isCompleted, "Campaign is completed");
+        require(!campaign.isCompleted, "Campaign is already completed");
         require(block.timestamp < campaign.deadline, "Campaign has ended");
         require(msg.value > 0, "Donation must be greater than 0");
 
@@ -150,13 +134,10 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
 
     function withdrawFunds(
         uint256 campaignId
-    )
-        external
-        nonReentrant
-        validCampaign(campaignId)
-        onlyCampaignOwner(campaignId)
-    {
+    ) external nonReentrant campaignExists(campaignId) {
         Campaign storage campaign = campaigns[campaignId];
+        require(campaign.owner == msg.sender, "Not campaign owner");
+        require(!campaign.fundsWithdrawn, "Funds already withdrawn"); // Check this first
         require(campaign.raisedAmount > 0, "No funds to withdraw");
         require(
             block.timestamp >= campaign.deadline || campaign.isCompleted,
@@ -165,7 +146,7 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
 
         uint256 amount = campaign.raisedAmount;
         campaign.raisedAmount = 0;
-        campaign.isCompleted = true;
+        campaign.fundsWithdrawn = true; // Mark funds as withdrawn
 
         (bool success, ) = payable(campaign.owner).call{value: amount}("");
         require(success, "Withdrawal failed");
@@ -173,34 +154,43 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         emit FundsWithdrawn(campaignId, campaign.owner, amount);
     }
 
-    // View Functions
     function getCampaign(
         uint256 campaignId
-    ) external view validCampaign(campaignId) returns (Campaign memory) {
+    ) external view campaignExists(campaignId) returns (Campaign memory) {
         return campaigns[campaignId];
+    }
+
+    function getAllCampaigns() external view returns (Campaign[] memory) {
+        uint256 totalCampaigns = _campaignIds.current();
+        Campaign[] memory allCampaigns = new Campaign[](totalCampaigns);
+
+        for (uint256 i = 0; i < totalCampaigns; i++) {
+            allCampaigns[i] = campaigns[i];
+        }
+
+        return allCampaigns;
     }
 
     function getCampaignDonations(
         uint256 campaignId
-    ) external view validCampaign(campaignId) returns (Donation[] memory) {
+    ) external view campaignExists(campaignId) returns (Donation[] memory) {
         return campaignDonations[campaignId];
     }
 
     function getDonorContribution(
         uint256 campaignId,
         address donor
-    ) external view validCampaign(campaignId) returns (uint256) {
+    ) external view campaignExists(campaignId) returns (uint256) {
         return donorContributions[campaignId][donor];
+    }
+
+    function getTotalCampaigns() external view returns (uint256) {
+        return _campaignIds.current();
     }
 
     function grantCampaignCreatorRole(
         address account
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         grantRole(CAMPAIGN_CREATOR_ROLE, account);
-    }
-
-    // Function to get total number of campaigns
-    function getTotalCampaigns() external view returns (uint256) {
-        return _campaignIds.current();
     }
 }
