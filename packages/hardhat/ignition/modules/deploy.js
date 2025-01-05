@@ -53,21 +53,17 @@ main()
     process.exit(1);
   });
 
-// > @lisk-scaffold-dapp/hardhat@1.0.0 deploy:normal
-// > npx hardhat run ./ignition/modules/deploy.js --network sepolia
-
-// Starting deployment process...
 // Contract factory created successfully
 // Deploying contract...
 // Contract deployment initiated
 // Waiting for deployment to be mined...
-// CrowdFunding Contract Deployed to: 0xa857caf075Cb9060e4C9B589ff2Df43731e0EB32
+// CrowdFunding Contract Deployed to: 0x364F6A3A7456355b2c797e4eDD091369e724c665
 // Deployer address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
 // Granting CAMPAIGN_CREATOR_ROLE...
 // Granted CAMPAIGN_CREATOR_ROLE to: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
 
 // Deployment Summary:
 // --------------------
-// Contract Address: 0xa857caf075Cb9060e4C9B589ff2Df43731e0EB32
+// Contract Address: 0x364F6A3A7456355b2c797e4eDD091369e724c665
 // Deployer Address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
 // Network: sepolia

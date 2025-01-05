@@ -52,6 +52,10 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         uint256 amount
     );
     event CampaignCompleted(uint256 indexed campaignId, uint256 totalRaised);
+    event CampaignDeleted(
+        uint256 indexed campaignId,
+        address indexed deletedBy
+    );
 
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -152,6 +156,20 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         require(success, "Withdrawal failed");
 
         emit FundsWithdrawn(campaignId, campaign.owner, amount);
+    }
+
+    function deleteCampaign(
+        uint256 campaignId
+    ) external campaignExists(campaignId) {
+        Campaign storage campaign = campaigns[campaignId];
+        require(
+            msg.sender == campaign.owner ||
+                hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
+            "Only the owner or admin can delete this campaign"
+        );
+
+        delete campaigns[campaignId];
+        emit CampaignDeleted(campaignId, msg.sender);
     }
 
     function getCampaign(
