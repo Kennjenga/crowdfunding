@@ -21,7 +21,8 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         address owner;
         uint256 deadline;
         bool isCompleted;
-        bool fundsWithdrawn; // Tracks if funds have been withdrawn
+        bool fundsWithdrawn;
+        bool isDeleted;
     }
 
     struct Donation {
@@ -67,6 +68,11 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         _;
     }
 
+    modifier campaignNotDeleted(uint256 campaignId) {
+        require(!campaigns[campaignId].isDeleted, "Campaign has been deleted");
+        _;
+    }
+
     function createCampaign(
         string memory title,
         string memory description,
@@ -95,7 +101,8 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
             owner: msg.sender,
             deadline: block.timestamp + (durationInDays * 1 days),
             isCompleted: false,
-            fundsWithdrawn: false
+            fundsWithdrawn: false,
+            isDeleted: false
         });
 
         emit CampaignCreated(
@@ -111,7 +118,13 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
 
     function donateToCampaign(
         uint256 campaignId
-    ) external payable nonReentrant campaignExists(campaignId) {
+    )
+        external
+        payable
+        nonReentrant
+        campaignExists(campaignId)
+        campaignNotDeleted(campaignId)
+    {
         Campaign storage campaign = campaigns[campaignId];
         require(!campaign.isCompleted, "Campaign is already completed");
         require(block.timestamp < campaign.deadline, "Campaign has ended");
@@ -138,10 +151,15 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
 
     function withdrawFunds(
         uint256 campaignId
-    ) external nonReentrant campaignExists(campaignId) {
+    )
+        external
+        nonReentrant
+        campaignExists(campaignId)
+        campaignNotDeleted(campaignId)
+    {
         Campaign storage campaign = campaigns[campaignId];
         require(campaign.owner == msg.sender, "Not campaign owner");
-        require(!campaign.fundsWithdrawn, "Funds already withdrawn"); // Check this first
+        require(!campaign.fundsWithdrawn, "Funds already withdrawn");
         require(campaign.raisedAmount > 0, "No funds to withdraw");
         require(
             block.timestamp >= campaign.deadline || campaign.isCompleted,
@@ -150,7 +168,7 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
 
         uint256 amount = campaign.raisedAmount;
         campaign.raisedAmount = 0;
-        campaign.fundsWithdrawn = true; // Mark funds as withdrawn
+        campaign.fundsWithdrawn = true;
 
         (bool success, ) = payable(campaign.owner).call{value: amount}("");
         require(success, "Withdrawal failed");
@@ -160,30 +178,61 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
 
     function deleteCampaign(
         uint256 campaignId
-    ) external campaignExists(campaignId) {
+    ) external campaignExists(campaignId) campaignNotDeleted(campaignId) {
         Campaign storage campaign = campaigns[campaignId];
         require(
             msg.sender == campaign.owner ||
                 hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
             "Only the owner or admin can delete this campaign"
         );
+        require(
+            campaign.raisedAmount == 0,
+            "Cannot delete campaign with existing funds"
+        );
 
-        delete campaigns[campaignId];
+        campaign.isDeleted = true;
+
+        // campaign.title = "";
+        // campaign.description = "";
+        // campaign.targetAmount = 0;
+        // campaign.deadline = 0;
+
         emit CampaignDeleted(campaignId, msg.sender);
     }
 
     function getCampaign(
         uint256 campaignId
-    ) external view campaignExists(campaignId) returns (Campaign memory) {
+    )
+        external
+        view
+        campaignExists(campaignId)
+        campaignNotDeleted(campaignId)
+        returns (Campaign memory)
+    {
         return campaigns[campaignId];
     }
 
     function getAllCampaigns() external view returns (Campaign[] memory) {
         uint256 totalCampaigns = _campaignIds.current();
-        Campaign[] memory allCampaigns = new Campaign[](totalCampaigns);
+        uint256 activeCampaigns = 0;
 
+        // Count active campaigns
         for (uint256 i = 0; i < totalCampaigns; i++) {
-            allCampaigns[i] = campaigns[i];
+            if (!campaigns[i].isDeleted) {
+                activeCampaigns++;
+            }
+        }
+
+        // Create array of correct size
+        Campaign[] memory allCampaigns = new Campaign[](activeCampaigns);
+        uint256 currentIndex = 0;
+
+        // Fill array with only active campaigns
+        for (uint256 i = 0; i < totalCampaigns; i++) {
+            if (!campaigns[i].isDeleted) {
+                allCampaigns[currentIndex] = campaigns[i];
+                currentIndex++;
+            }
         }
 
         return allCampaigns;
@@ -204,6 +253,19 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
 
     function getTotalCampaigns() external view returns (uint256) {
         return _campaignIds.current();
+    }
+
+    function getTotalActiveCampaigns() external view returns (uint256) {
+        uint256 totalCampaigns = _campaignIds.current();
+        uint256 activeCampaigns = 0;
+
+        for (uint256 i = 0; i < totalCampaigns; i++) {
+            if (!campaigns[i].isDeleted) {
+                activeCampaigns++;
+            }
+        }
+
+        return activeCampaigns;
     }
 
     function grantCampaignCreatorRole(

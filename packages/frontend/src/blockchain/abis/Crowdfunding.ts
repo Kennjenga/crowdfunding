@@ -340,6 +340,11 @@ export const CROWDFUNDING_ABI =   [
             "internalType": "bool",
             "name": "fundsWithdrawn",
             "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isDeleted",
+            "type": "bool"
           }
         ],
         "internalType": "struct CrowdFunding.Campaign[]",
@@ -405,6 +410,11 @@ export const CROWDFUNDING_ABI =   [
           {
             "internalType": "bool",
             "name": "fundsWithdrawn",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isDeleted",
             "type": "bool"
           }
         ],
@@ -490,6 +500,19 @@ export const CROWDFUNDING_ABI =   [
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTotalActiveCampaigns",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -633,5 +656,5 @@ export const CROWDFUNDING_ABI =   [
   }
 ]
 
-export const CROWDFUNDING_ADDRESS = "0x1544BE1136Cb881b34CC351587d6A0093FB58096"
+export const CROWDFUNDING_ADDRESS = "0x82050430B2b12FeBF459Fe928033CA738Cae0C46"
 export const ADMIN_ADDRESS = "0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99"
