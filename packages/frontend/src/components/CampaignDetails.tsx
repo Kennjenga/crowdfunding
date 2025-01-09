@@ -1,5 +1,6 @@
 // components/CampaignDetails.tsx
 import { useState } from "react";
+import { formatUnits } from "ethers";
 import { useCrowdfunding } from "@/blockchain/hooks/useCrowdfunding";
 import { parseEther } from "viem";
 
@@ -72,6 +73,17 @@ export default function CampaignDetails({
       setIsLoading(false);
     }
   };
+  const weiToETH = (wei: bigint | string | number) => {
+    // console.log("Input Wei:", wei.toString());
+    const eth = formatUnits(wei.toString(), 18);
+    // console.log("Converted ETH:", eth);
+    const formatted = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 10,
+    }).format(Number(eth));
+    // console.log("Formatted ETH:", formatted);
+    return formatted;
+  };
 
   const isOwner = userAddress?.toLowerCase() === campaign.owner.toLowerCase();
   const canDelete = isAdmin || isOwner;
@@ -92,13 +104,13 @@ export default function CampaignDetails({
           <div className="bg-gray-50 p-4 rounded">
             <p className="text-sm text-gray-500">Target Amount</p>
             <p className="text-lg font-semibold">
-              {campaign.targetAmount.toString()} ETH
+              {weiToETH(campaign.targetAmount)} ETH
             </p>
           </div>
           <div className="bg-gray-50 p-4 rounded">
             <p className="text-sm text-gray-500">Raised Amount</p>
             <p className="text-lg font-semibold">
-              {campaign.raisedAmount.toString()} ETH
+              {weiToETH(campaign.raisedAmount)} ETH
             </p>
           </div>
         </div>

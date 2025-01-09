@@ -90,7 +90,7 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
             id: campaignId,
             title: title,
             description: description,
-            targetAmount: targetAmountInEther * 1 ether,
+            targetAmount: targetAmountInEther,
             raisedAmount: 0,
             owner: msg.sender,
             deadline: block.timestamp + (durationInDays * 1 days),
@@ -102,7 +102,7 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
             campaignId,
             title,
             msg.sender,
-            targetAmountInEther * 1 ether,
+            targetAmountInEther,
             block.timestamp + (durationInDays * 1 days)
         );
 

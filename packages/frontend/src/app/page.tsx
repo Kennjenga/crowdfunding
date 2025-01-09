@@ -7,6 +7,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useCrowdfunding } from "@/blockchain/hooks/useCrowdfunding";
 import CampaignDetails from "../components/CampaignDetails";
 import CreateCampaign from "../components/CreateCampaignForm";
+import { formatUnits } from "ethers";
 
 export default function Home() {
   const { campaigns } = useCrowdfunding() as {
@@ -34,6 +35,17 @@ export default function Home() {
     fundsWithdrawn: boolean;
   } | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const weiToETH = (wei: bigint | string | number) => {
+    // console.log("Input Wei:", wei.toString());
+    const eth = formatUnits(wei.toString(), 18);
+    // console.log("Converted ETH:", eth);
+    const formatted = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 10,
+    }).format(Number(eth));
+    // console.log("Formatted ETH:", formatted);
+    return formatted;
+  };
 
   return (
     <div className="grid grid-rows-[auto_1fr] items-center justify-items-center min-h-screen p-8 gap-8 bg-gradient-to-b from-gray-50 to-gray-100">
@@ -72,8 +84,8 @@ export default function Home() {
                   {campaign.description}
                 </p>
                 <div className="space-y-1">
-                  <p>Target: {campaign.targetAmount.toString()} ETH</p>
-                  <p>Raised: {campaign.raisedAmount.toString()} ETH</p>
+                  <p>Target: {weiToETH(campaign.targetAmount)} ETH</p>
+                  <p>Raised: {weiToETH(campaign.raisedAmount)} ETH</p>
                   <p>
                     Deadline:{" "}
                     {new Date(
