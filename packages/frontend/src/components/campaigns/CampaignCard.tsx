@@ -26,33 +26,40 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
     (Number(campaign.raisedAmount) / Number(campaign.targetAmount)) * 100;
 
   return (
-    <div className="glass-card p-6">
-      <div className="flex items-center gap-3 mb-4">
-        {ensAvatar ? (
-          <Image
-            src={ensAvatar}
-            alt={ensName || campaign.owner}
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-        ) : (
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-orange-400" />
-        )}
-        <div>
-          <h2 className="text-xl font-bold text-purple-900">
-            {campaign.title}
-          </h2>
-          <p className="text-sm text-purple-700">
-            by{" "}
-            {ensName ||
-              `${campaign.owner.slice(0, 6)}...${campaign.owner.slice(-4)}`}
-          </p>
+    <div className="glass-card p-6 flex flex-col justify-between h-full">
+      {/* Header Section */}
+      <div>
+        <div className="flex items-center gap-3 mb-4">
+          {ensAvatar ? (
+            <Image
+              src={ensAvatar}
+              alt={ensName || campaign.owner}
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-orange-400" />
+          )}
+          <div>
+            <h2 className="text-xl font-bold text-purple-900 line-clamp-1">
+              {campaign.title}
+            </h2>
+            <p className="text-sm text-purple-700">
+              by{" "}
+              {ensName ||
+                `${campaign.owner.slice(0, 6)}...${campaign.owner.slice(-4)}`}
+            </p>
+          </div>
         </div>
+
+        {/* Description */}
+        <p className="text-gray-600 mb-4 line-clamp-2">
+          {campaign.description}
+        </p>
       </div>
 
-      <p className="text-gray-600 mb-4 line-clamp-2">{campaign.description}</p>
-
+      {/* Progress Section */}
       <div className="space-y-4">
         <div className="progress-bar-glass">
           <div
@@ -69,7 +76,10 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
             {Math.round(progress)}%
           </span>
         </div>
+      </div>
 
+      {/* Footer Section */}
+      <div className="mt-4">
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
             <span className="text-sm text-gray-500">Target</span>

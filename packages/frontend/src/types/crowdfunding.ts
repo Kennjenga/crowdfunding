@@ -3,6 +3,7 @@ import { formatUnits } from "ethers";
 
 // types/crowdfunding.ts
 export interface Campaign {
+  fundsWithdrawn: bigint;
   id: bigint;
   title: string;
   description: string;

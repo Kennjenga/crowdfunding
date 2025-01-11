@@ -1,6 +1,6 @@
-// app/providers.tsx
 "use client";
 
+import React, { ReactNode } from "react";
 import "@rainbow-me/rainbowkit/styles.css";
 import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { State, WagmiProvider } from "wagmi";
@@ -10,12 +10,13 @@ import { config } from "@/blockchain/config/wagmi";
 const queryClient = new QueryClient();
 
 interface ProvidersProps {
-  children: React.ReactNode;
-
+  children: ReactNode;
   initialState?: State;
 }
 
-export const Providers: React.FC<ProvidersProps> = ({ children }) => {
+export const Providers: React.FC<ProvidersProps> = ({
+  children,
+}: ProvidersProps) => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
@@ -26,7 +27,6 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
             borderRadius: "medium",
             fontStack: "system",
           })}
-          // modalSize="compact"
           showRecentTransactions={true}
         >
           {children}
