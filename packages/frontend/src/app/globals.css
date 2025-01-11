@@ -49,6 +49,7 @@
   body {
     @apply bg-orange-50 text-purple-900;
     font-family: 'Inter', system-ui, sans-serif;
+    margin: 0;
   }
 
   h1,
@@ -91,11 +92,19 @@
   }
 
   .glass-card {
-    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-[0_8px_32px_0_rgba(31, 38, 135, 0.37)] rounded-2xl transition-all duration-300;
+    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-lg rounded-2xl transition-all duration-300;
   }
 
   .glass-card:hover {
-    @apply transform scale-[1.02] shadow-[0_8px_32px_0_rgba(31, 38, 135, 0.47)] bg-white/80 backdrop-blur-xl;
+    @apply transform scale-[1.02] shadow-xl bg-white/80 backdrop-blur-xl;
+  }
+
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
   }
 
   .progress-bar-glass {

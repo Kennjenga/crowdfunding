@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "crowdfunding",
+  title: "pamoja",
   description: "A donation app",
 };
 
@@ -34,7 +34,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} flex flex-col min-h-screen mx-auto max-w-[98%] sm:max-w-[94%]`}
       >
         <Providers initialState={initialState}>{children}</Providers>
       </body>

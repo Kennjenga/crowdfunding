@@ -77,7 +77,7 @@ export default function Home() {
             </Link>
           </div>
           <Image
-            src="/placeholder.svg?height=400&width=500"
+            src="/pamoja1.jpeg"
             alt="People helping each other"
             width={500}
             height={400}
@@ -114,51 +114,6 @@ export default function Home() {
             <p className="text-purple-700">
               Support causes and individuals across the world.
             </p>
-          </div>
-        </div>
-
-        {/* Urgent Fundraising Section */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-bold mb-8 text-purple-900 text-center">
-            Urgent Campaigns
-          </h2>
-          <div className="grid grid-cols-3 gap-8">
-            {FeaturedCampaigns.map((campaign, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-2xl overflow-hidden shadow-lg transition-transform hover:scale-105"
-              >
-                <Image
-                  src={campaign.image}
-                  alt={campaign.title}
-                  width={400}
-                  height={300}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <span className="text-sm text-orange-500 font-semibold">
-                    {campaign.category}
-                  </span>
-                  <h3 className="font-semibold text-xl mb-2 text-purple-900">
-                    {campaign.title}
-                  </h3>
-                  <div className="mb-4">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div
-                        className="bg-orange-500 h-2.5 rounded-full"
-                        style={{ width: "70%" }}
-                      ></div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-purple-700 font-bold">
-                      {campaign.raised} raised
-                    </p>
-                    <p className="text-gray-600">of {campaign.amount}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
 

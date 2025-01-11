@@ -1,6 +1,5 @@
 // app/campaign/[id]/page.tsx
-"use client";
-
+("use client");
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -10,24 +9,7 @@ import {
   useCrowdfunding,
   useGetCampaign,
 } from "@/blockchain/hooks/useCrowdfunding";
-
-interface Campaign {
-  owner: string;
-  title: string;
-  description: string;
-  targetAmount: string;
-  raisedAmount: string;
-  isCompleted: boolean;
-  fundsWithdrawn: boolean;
-  deadline: string;
-}
-
-interface CrowdfundingHook {
-  isAdmin: boolean;
-  donateToCampaign: (campaignId: bigint, amount: bigint) => Promise<void>;
-  withdrawFunds: (campaignId: bigint) => Promise<void>;
-  deleteCampaign: (campaignId: bigint) => Promise<void>;
-}
+import { Campaign } from "@/types/crowdfunding";
 
 export default function CampaignPage() {
   const params = useParams();
@@ -35,9 +17,9 @@ export default function CampaignPage() {
   const { address } = useAccount();
   const campaignId = BigInt(params.id as string);
 
-  const { data: campaign } = useGetCampaign(campaignId) as { data: Campaign };
+  const { data: campaign }: { data: Campaign } = useGetCampaign(campaignId);
   const { isAdmin, donateToCampaign, withdrawFunds, deleteCampaign } =
-    useCrowdfunding() as CrowdfundingHook;
+    useCrowdfunding();
 
   const [donationAmount, setDonationAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -167,9 +149,7 @@ export default function CampaignPage() {
             disabled={isLoading}
             className="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50 mb-4"
           >
-            {isLoading
-              ? "Processing..."
-              : ("Withdraw Funds" as React.ReactNode)}
+            {isLoading ? "Processing..." : "Withdraw Funds"}
           </button>
         )}
 
@@ -179,9 +159,7 @@ export default function CampaignPage() {
             disabled={isLoading}
             className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
           >
-            {isLoading
-              ? "Processing..."
-              : ("Delete Campaign" as React.ReactNode)}
+            {isLoading ? "Processing..." : "Delete Campaign"}
           </button>
         )}
       </div>
