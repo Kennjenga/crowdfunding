@@ -34,8 +34,5 @@ export const config = getDefaultConfig({
     base,
     optimism,
   ],
-  transports: {
-    [sepolia.id]: http(),
-  },
   ssr: true,
 });
