@@ -75,7 +75,7 @@ export default function Home() {
         {/* Statistics */}
         <div className="text-center py-12 lg:py-20 bg-purple-100 rounded-3xl mb-20">
           <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-purple-900">
-            2+
+            10+
           </h2>
           <p className="text-xl lg:text-2xl text-purple-700 mb-8">
             Generous Souls Making a Difference

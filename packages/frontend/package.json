@@ -1,6 +1,8 @@
 {
   "name": "pamoja",
   "version": "1.0.0",
+  "author": "Kennjenga<kinyagia10@gmail.com>",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
