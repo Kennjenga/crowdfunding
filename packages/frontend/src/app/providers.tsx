@@ -28,7 +28,6 @@ export const Providers: React.FC<ProvidersProps> = ({
             fontStack: "system",
           })}
           showRecentTransactions={true}
-          modalSize="compact"
           coolMode
         >
           {children}
