@@ -12,6 +12,7 @@ export function UrgentCampaign() {
     campaigns: Array<{
       id: string;
       title: string;
+      image_url: string;
       description: string;
       targetAmount: bigint;
       raisedAmount: bigint;
@@ -29,6 +30,7 @@ export function UrgentCampaign() {
     Array<{
       id: string;
       title: string;
+      image_url: string;
       description: string;
       targetAmount: bigint;
       raisedAmount: bigint;

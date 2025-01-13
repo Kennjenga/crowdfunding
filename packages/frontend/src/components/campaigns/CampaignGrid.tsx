@@ -12,6 +12,7 @@ export function CampaignGrid() {
     campaigns: Array<{
       id: string;
       title: string;
+      image_url: string;
       description: string;
       targetAmount: bigint;
       raisedAmount: bigint;

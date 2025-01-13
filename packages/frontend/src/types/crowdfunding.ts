@@ -6,6 +6,7 @@ export interface Campaign {
   fundsWithdrawn: bigint;
   id: bigint;
   title: string;
+  image_url: string;
   description: string;
   targetAmount: bigint;
   raisedAmount: bigint;
