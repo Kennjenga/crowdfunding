@@ -7,6 +7,7 @@ import { formatEther, parseEther } from "ethers";
 import {
   useCrowdfunding,
   useGetCampaign,
+  useGetCampaignDonations,
 } from "@/blockchain/hooks/useCrowdfunding";
 import { Campaign } from "@/types/crowdfunding";
 import Navbar from "@/components/navbar";
@@ -18,6 +19,12 @@ export default function CampaignPage() {
   const campaignId = BigInt(params.id as string);
 
   const { data } = useGetCampaign(campaignId);
+  const donationsObjectData = useGetCampaignDonations(campaignId); // Fetch donations
+  const donationsData = donationsObjectData.data as Array<{
+    donor: string;
+    amount: string;
+  }>;
+  console.log(donationsData);
   const campaign = data as Campaign;
   const { isAdmin, donateToCampaign, withdrawFunds, deleteCampaign } =
     useCrowdfunding();
@@ -143,6 +150,36 @@ export default function CampaignPage() {
               </div>
             </div>
           )}
+
+          {/* Latest Donations */}
+          <div className="mb-6">
+            <h2 className="text-lg md:text-xl font-bold mb-3">
+              Latest Donations
+            </h2>
+            {donationsData && donationsData.length > 0 ? (
+              <ul className="space-y-3">
+                {donationsData
+                  .slice(-5) // Show only the latest 5 donations
+                  .reverse() // Reverse to show the most recent first
+                  .map((donation, index) => (
+                    <li
+                      key={index}
+                      className="p-3 bg-gray-50 rounded-lg flex justify-between items-center"
+                    >
+                      <span className="text-gray-700">
+                        {donation.donor.slice(0, 6)}...
+                        {donation.donor.slice(-4)}
+                      </span>
+                      <span className="text-purple-600 font-medium">
+                        {formatEther(donation.amount)} ETH
+                      </span>
+                    </li>
+                  ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No donations yet.</p>
+            )}
+          </div>
 
           {/* Action Buttons */}
           <div className="space-y-3">

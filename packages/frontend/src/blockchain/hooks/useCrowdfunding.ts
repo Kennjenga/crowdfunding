@@ -2,7 +2,6 @@ import { useReadContract, useWriteContract, useAccount } from 'wagmi'
 import { type Address } from 'viem'
 import { CROWDFUNDING_ABI, CROWDFUNDING_ADDRESS } from '@/blockchain/abis/Crowdfunding'
 
-
 // Separate hooks for individual campaign data
 export function useGetCampaign(campaignId: bigint) {
   return useReadContract({
@@ -18,10 +17,10 @@ export function useGetCampaignDonations(campaignId: bigint) {
   return useReadContract({
     address: CROWDFUNDING_ADDRESS,
     abi: CROWDFUNDING_ABI,
-    functionName: 'getCampaignDonations',
+    functionName: "getCampaignDonations",
     args: [campaignId],
     chainId: 11155111,
-  })
+  });
 }
 
 export function useGetDonorContribution(campaignId: bigint, donor: Address) {
@@ -97,7 +96,8 @@ export function useCrowdfunding() {
   // Campaign creation and management
   const createCampaign = async (
     title: string, 
-    description: string, 
+    description: string,
+    image_url: string,  // Added image_url parameter
     targetAmount: bigint, 
     durationInDays: number
   ) => {
@@ -105,7 +105,7 @@ export function useCrowdfunding() {
       address: CROWDFUNDING_ADDRESS,
       abi: CROWDFUNDING_ABI,
       functionName: 'createCampaign',
-      args: [title, description, targetAmount, durationInDays],
+      args: [title, description, image_url, targetAmount, durationInDays],
     })
   }
 
@@ -143,6 +143,15 @@ export function useCrowdfunding() {
       address: CROWDFUNDING_ADDRESS,
       abi: CROWDFUNDING_ABI,
       functionName: 'grantCampaignCreatorRole',
+      args: [account],
+    })
+  }
+
+  const revokeCampaignCreatorRole = async (account: Address) => {  // Added revoke function
+    return writeContract({
+      address: CROWDFUNDING_ADDRESS,
+      abi: CROWDFUNDING_ABI,
+      functionName: 'revokeCampaignCreatorRole',
       args: [account],
     })
   }
@@ -187,6 +196,7 @@ export function useCrowdfunding() {
     
     // Role management
     grantCampaignCreatorRole,
+    revokeCampaignCreatorRole,  // Added to return object
     grantRole,
     revokeRole,
   }

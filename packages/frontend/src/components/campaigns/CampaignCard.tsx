@@ -7,6 +7,7 @@ interface CampaignCardProps {
   campaign: {
     id: string;
     title: string;
+    image_url: string; // Image URL for the campaign
     description: string;
     targetAmount: bigint;
     raisedAmount: bigint;
@@ -28,35 +29,42 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
   return (
     <div className="glass-card p-6 flex flex-col justify-between h-full">
       {/* Header Section */}
-      <div>
-        <div className="flex items-center gap-3 mb-4">
-          {ensAvatar ? (
-            <Image
-              src={ensAvatar}
-              alt={ensName || campaign.owner}
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-orange-400" />
-          )}
-          <div>
-            <h2 className="text-xl font-bold text-purple-900 line-clamp-1">
-              {campaign.title}
-            </h2>
-            <p className="text-sm text-purple-700">
-              by{" "}
-              {ensName ||
-                `${campaign.owner.slice(0, 6)}...${campaign.owner.slice(-4)}`}
-            </p>
-          </div>
+      <div className="flex items-center gap-3 mb-4">
+        {ensAvatar ? (
+          <Image
+            src={ensAvatar}
+            alt={ensName || campaign.owner}
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-orange-400" />
+        )}
+        <div>
+          <h2 className="text-xl font-bold text-purple-900 line-clamp-1">
+            {campaign.title}
+          </h2>
+          <p className="text-sm text-purple-700">
+            by{" "}
+            {ensName ||
+              `${campaign.owner.slice(0, 6)}...${campaign.owner.slice(-4)}`}
+          </p>
         </div>
-
+      </div>
+      {/* Campaign Image */}
+      <div className="relative w-full h-40 mb-4">
+        <Image
+          src={campaign.image_url}
+          alt={campaign.title}
+          layout="fill"
+          objectFit="cover"
+          className="rounded-lg"
+        />
+      </div>
+      <div>
         {/* Description */}
-        <p className="text-gray-600 mb-4 line-clamp-2">
-          {campaign.description}
-        </p>
+        <p className="text-black my-4 line-clamp-2">{campaign.description}</p>
       </div>
 
       {/* Progress Section */}
@@ -82,14 +90,14 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
       <div className="mt-4">
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Target</span>
+            <span className="text-sm text-black">Target</span>
             <span className="font-medium text-purple-900">
               {formatEther(campaign.targetAmount)} ETH
             </span>
           </div>
 
           <div className="flex flex-col text-right">
-            <span className="text-sm text-gray-500">Ends</span>
+            <span className="text-sm text-black">Ends</span>
             <span className="font-medium text-purple-900">
               {new Date(Number(campaign.deadline) * 1000).toLocaleDateString()}
             </span>

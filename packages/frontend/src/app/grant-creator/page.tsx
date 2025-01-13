@@ -1,4 +1,3 @@
-// app/grant-creator/page.tsx (continued)
 "use client";
 
 import { useState } from "react";
@@ -9,32 +8,60 @@ import { isAddress } from "ethers";
 
 export default function GrantCreator() {
   const router = useRouter();
-  const { grantCampaignCreatorRole, isAdmin } = useCrowdfunding();
-  const [address, setAddress] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { grantCampaignCreatorRole, revokeCampaignCreatorRole, isAdmin } =
+    useCrowdfunding();
+  const [grantAddress, setGrantAddress] = useState("");
+  const [revokeAddress, setRevokeAddress] = useState("");
+  const [isLoadingGrant, setIsLoadingGrant] = useState(false);
+  const [isLoadingRevoke, setIsLoadingRevoke] = useState(false);
+  const [grantError, setGrantError] = useState("");
+  const [revokeError, setRevokeError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleGrantSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setGrantError("");
 
-    if (!isAddress(address)) {
-      setError("Invalid Ethereum address");
+    if (!isAddress(grantAddress)) {
+      setGrantError("Invalid Ethereum address");
       return;
     }
 
     try {
-      setIsLoading(true);
-      await grantCampaignCreatorRole(address as `0x${string}`);
-      setAddress("");
+      setIsLoadingGrant(true);
+      await grantCampaignCreatorRole(grantAddress as `0x${string}`);
+      setGrantAddress("");
       alert("Creator role granted successfully!");
     } catch (error) {
       console.error("Error granting creator role:", error);
-      setError(
+      setGrantError(
         "Failed to grant creator role. Make sure you have admin permissions."
       );
     } finally {
-      setIsLoading(false);
+      setIsLoadingGrant(false);
+    }
+  };
+
+  const handleRevokeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRevokeError("");
+
+    if (!isAddress(revokeAddress)) {
+      setRevokeError("Invalid Ethereum address");
+      return;
+    }
+
+    try {
+      setIsLoadingRevoke(true);
+      await revokeCampaignCreatorRole(revokeAddress as `0x${string}`);
+      setRevokeAddress("");
+      alert("Creator role revoked successfully!");
+    } catch (error) {
+      console.error("Error revoking creator role:", error);
+      setRevokeError(
+        "Failed to revoke creator role. Make sure you have admin permissions."
+      );
+    } finally {
+      setIsLoadingRevoke(false);
     }
   };
 
@@ -72,32 +99,68 @@ export default function GrantCreator() {
         <ConnectButton />
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
         <h1 className="text-3xl font-bold mb-6">Grant Campaign Creator Role</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleGrantSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Ethereum Address
             </label>
             <input
               type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              value={grantAddress}
+              onChange={(e) => setGrantAddress(e.target.value)}
               className="w-full border rounded px-3 py-2"
               placeholder="0x..."
               required
             />
           </div>
 
-          {error && <div className="text-red-600 text-sm">{error}</div>}
+          {grantError && (
+            <div className="text-red-600 text-sm">{grantError}</div>
+          )}
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoadingGrant}
             className="w-full bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 disabled:opacity-50"
           >
-            {isLoading ? "Processing..." : "Grant Creator Role"}
+            {isLoadingGrant ? "Processing..." : "Grant Creator Role"}
+          </button>
+        </form>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h1 className="text-3xl font-bold mb-6">
+          Revoke Campaign Creator Role
+        </h1>
+
+        <form onSubmit={handleRevokeSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Ethereum Address
+            </label>
+            <input
+              type="text"
+              value={revokeAddress}
+              onChange={(e) => setRevokeAddress(e.target.value)}
+              className="w-full border rounded px-3 py-2"
+              placeholder="0x..."
+              required
+            />
+          </div>
+
+          {revokeError && (
+            <div className="text-red-600 text-sm">{revokeError}</div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isLoadingRevoke}
+            className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
+          >
+            {isLoadingRevoke ? "Processing..." : "Revoke Creator Role"}
           </button>
         </form>
       </div>

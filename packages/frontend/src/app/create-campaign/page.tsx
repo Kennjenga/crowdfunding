@@ -13,6 +13,7 @@ export default function CreateCampaign() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    imageUrl: "", // Added imageUrl field
     targetAmount: "",
     duration: "",
   });
@@ -25,6 +26,7 @@ export default function CreateCampaign() {
       await createCampaign(
         formData.title,
         formData.description,
+        formData.imageUrl, // Pass imageUrl to the function
         parseEther(formData.targetAmount),
         Number(formData.duration)
       );
@@ -83,6 +85,22 @@ export default function CreateCampaign() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
+              Image URL
+            </label>
+            <input
+              type="url"
+              value={formData.imageUrl}
+              onChange={(e) =>
+                setFormData({ ...formData, imageUrl: e.target.value })
+              }
+              className="w-full border rounded px-3 py-2"
+              placeholder="https://example.com/image.jpg"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Target Amount (ETH)
             </label>
             <input
@@ -92,8 +110,6 @@ export default function CreateCampaign() {
                 setFormData({ ...formData, targetAmount: e.target.value })
               }
               className="w-full border rounded px-3 py-2"
-              min="0"
-              step="0.01"
               required
             />
           </div>

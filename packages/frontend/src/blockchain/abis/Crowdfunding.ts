@@ -1,4 +1,4 @@
-export const CROWDFUNDING_ABI =   [
+export const CROWDFUNDING_ABI =  [
   {
     "inputs": [],
     "stateMutability": "nonpayable",
@@ -243,6 +243,11 @@ export const CROWDFUNDING_ABI =   [
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "image_url",
+        "type": "string"
+      },
+      {
         "internalType": "uint256",
         "name": "targetAmountInEther",
         "type": "uint256"
@@ -304,6 +309,11 @@ export const CROWDFUNDING_ABI =   [
           {
             "internalType": "string",
             "name": "title",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "image_url",
             "type": "string"
           },
           {
@@ -375,6 +385,11 @@ export const CROWDFUNDING_ABI =   [
           {
             "internalType": "string",
             "name": "title",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "image_url",
             "type": "string"
           },
           {
@@ -607,6 +622,19 @@ export const CROWDFUNDING_ABI =   [
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "revokeCampaignCreatorRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
@@ -656,4 +684,4 @@ export const CROWDFUNDING_ABI =   [
   }
 ]
 
-export const CROWDFUNDING_ADDRESS = "0x82050430B2b12FeBF459Fe928033CA738Cae0C46"
+export const CROWDFUNDING_ADDRESS = "0x9b142de1EAa9a6699a8020CE898B18772945CE9D"
