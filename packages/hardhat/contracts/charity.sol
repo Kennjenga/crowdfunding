@@ -15,6 +15,7 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
     struct Campaign {
         uint256 id;
         string title;
+        string image_url;
         string description;
         uint256 targetAmount;
         uint256 raisedAmount;
@@ -73,9 +74,11 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         _;
     }
 
+    // Modify createCampaign to include image_url
     function createCampaign(
         string memory title,
         string memory description,
+        string memory image_url, // Added this parameter
         uint256 targetAmountInEther,
         uint256 durationInDays
     ) external onlyRole(CAMPAIGN_CREATOR_ROLE) returns (uint256) {
@@ -88,6 +91,7 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
             durationInDays > 0 && durationInDays <= 365,
             "Invalid duration"
         );
+        require(bytes(image_url).length > 0, "Image URL cannot be empty");
 
         uint256 campaignId = _campaignIds.current();
         _campaignIds.increment();
@@ -95,6 +99,7 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         campaigns[campaignId] = Campaign({
             id: campaignId,
             title: title,
+            image_url: image_url, // Added this field
             description: description,
             targetAmount: targetAmountInEther,
             raisedAmount: 0,
@@ -192,10 +197,10 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
 
         campaign.isDeleted = true;
 
-        // campaign.title = "";
-        // campaign.description = "";
-        // campaign.targetAmount = 0;
-        // campaign.deadline = 0;
+        campaign.title = "";
+        campaign.description = "";
+        campaign.targetAmount = 0;
+        campaign.deadline = 0;
 
         emit CampaignDeleted(campaignId, msg.sender);
     }
@@ -272,5 +277,11 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         address account
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         grantRole(CAMPAIGN_CREATOR_ROLE, account);
+    }
+
+    function revokeCampaignCreatorRole(
+        address account
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        revokeRole(CAMPAIGN_CREATOR_ROLE, account);
     }
 }

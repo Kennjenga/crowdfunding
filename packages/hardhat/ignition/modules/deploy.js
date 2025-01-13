@@ -68,3 +68,20 @@ main()
 // Contract Address: 0x82050430B2b12FeBF459Fe928033CA738Cae0C46
 // Deployer Address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
 // Network: sepolia
+
+// Image deploy
+// Starting deployment process...
+// Contract factory created successfully
+// Deploying contract...
+// Contract deployment initiated
+// Waiting for deployment to be mined...
+// CrowdFunding Contract Deployed to: 0x9b142de1EAa9a6699a8020CE898B18772945CE9D
+// Deployer address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
+// Granting CAMPAIGN_CREATOR_ROLE...
+// Granted CAMPAIGN_CREATOR_ROLE to: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
+
+// Deployment Summary:
+// --------------------
+// Contract Address: 0x9b142de1EAa9a6699a8020CE898B18772945CE9D
+// Deployer Address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
+// Network: sepolia

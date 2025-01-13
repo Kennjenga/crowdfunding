@@ -15,12 +15,19 @@ describe("CrowdFunding", function () {
     creator,
     title = "Test Campaign",
     description = "Test Description",
+    image_url = "https://example.com/image.jpg",
     targetAmount = "1",
     duration = 30
   ) {
     return crowdFunding
       .connect(creator)
-      .createCampaign(title, description, toWei(targetAmount), duration);
+      .createCampaign(
+        title,
+        description,
+        image_url,
+        toWei(targetAmount),
+        duration
+      );
   }
 
   beforeEach(async function () {
@@ -55,12 +62,12 @@ describe("CrowdFunding", function () {
     it("Should create a campaign with correct parameters", async function () {
       await createCampaign(creator);
 
-      // Use getAllCampaigns instead of getCampaign to avoid deleted campaign check
       const campaigns = await crowdFunding.getAllCampaigns();
       const campaign = campaigns[0];
 
       expect(campaign.title).to.equal("Test Campaign");
       expect(campaign.description).to.equal("Test Description");
+      expect(campaign.image_url).to.equal("https://example.com/image.jpg");
       expect(campaign.targetAmount).to.equal(toWei("1"));
       expect(campaign.owner).to.equal(creator.address);
       expect(campaign.isCompleted).to.be.false;
@@ -79,22 +86,103 @@ describe("CrowdFunding", function () {
         );
     });
 
+    it("Should fail with empty image URL", async function () {
+      await expect(
+        crowdFunding
+          .connect(creator)
+          .createCampaign(
+            "Test Campaign",
+            "Test Description",
+            "",
+            toWei("1"),
+            30
+          )
+      ).to.be.revertedWith("Image URL cannot be empty");
+    });
+
     it("Should fail with invalid parameters", async function () {
       await expect(
-        createCampaign(creator, "", "Test Description", "1", 30)
+        createCampaign(
+          creator,
+          "",
+          "Test Description",
+          "https://example.com/image.jpg",
+          "1",
+          30
+        )
       ).to.be.revertedWith("Title cannot be empty");
 
       await expect(
-        createCampaign(creator, "Test Campaign", "Test Description", "0", 30)
+        createCampaign(
+          creator,
+          "Test Campaign",
+          "Test Description",
+          "https://example.com/image.jpg",
+          "0",
+          30
+        )
       ).to.be.revertedWith("Target amount must be greater than 0");
 
       await expect(
-        createCampaign(creator, "Test Campaign", "Test Description", "1", 0)
+        createCampaign(
+          creator,
+          "Test Campaign",
+          "Test Description",
+          "https://example.com/image.jpg",
+          "1",
+          0
+        )
       ).to.be.revertedWith("Invalid duration");
 
       await expect(
-        createCampaign(creator, "Test Campaign", "Test Description", "1", 366)
+        createCampaign(
+          creator,
+          "Test Campaign",
+          "Test Description",
+          "https://example.com/image.jpg",
+          "1",
+          366
+        )
       ).to.be.revertedWith("Invalid duration");
+    });
+  });
+
+  describe("Role Management", function () {
+    it("Should allow admin to revoke campaign creator role", async function () {
+      await crowdFunding.revokeCampaignCreatorRole(creator.address);
+
+      expect(
+        await crowdFunding.hasRole(
+          await crowdFunding.CAMPAIGN_CREATOR_ROLE(),
+          creator.address
+        )
+      ).to.be.false;
+
+      await expect(createCampaign(creator)).to.be.revertedWith(
+        `AccessControl: account ${creator.address.toLowerCase()} is missing role ${await crowdFunding.CAMPAIGN_CREATOR_ROLE()}`
+      );
+    });
+
+    it("Should prevent non-admin from revoking campaign creator role", async function () {
+      await expect(
+        crowdFunding.connect(creator).revokeCampaignCreatorRole(creator.address)
+      ).to.be.revertedWith(
+        `AccessControl: account ${creator.address.toLowerCase()} is missing role ${await crowdFunding.DEFAULT_ADMIN_ROLE()}`
+      );
+    });
+
+    it("Should allow re-granting campaign creator role after revocation", async function () {
+      await crowdFunding.revokeCampaignCreatorRole(creator.address);
+      await crowdFunding.grantCampaignCreatorRole(creator.address);
+
+      expect(
+        await crowdFunding.hasRole(
+          await crowdFunding.CAMPAIGN_CREATOR_ROLE(),
+          creator.address
+        )
+      ).to.be.true;
+
+      await expect(createCampaign(creator)).to.not.be.reverted;
     });
   });
 
@@ -129,8 +217,8 @@ describe("CrowdFunding", function () {
     });
 
     it("Should reject donations after the campaign deadline", async function () {
-      await createCampaign(creator, "Short Campaign", "Test", "1", 1);
-      await time.increase(2 * 24 * 60 * 60);
+      await createCampaign(creator);
+      await time.increase(31 * 24 * 60 * 60);
       await expect(
         crowdFunding.connect(donor).donateToCampaign(1, { value: toWei("0.5") })
       ).to.be.revertedWith("Campaign has ended");
@@ -159,7 +247,6 @@ describe("CrowdFunding", function () {
           .to.emit(crowdFunding, "CampaignDeleted")
           .withArgs(0, creator.address);
 
-        // Verify campaign is deleted by checking active campaigns
         const activeCampaigns = await crowdFunding.getAllCampaigns();
         expect(activeCampaigns.length).to.equal(0);
       });

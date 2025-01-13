@@ -28,7 +28,7 @@ export const Providers: React.FC<ProvidersProps> = ({
             fontStack: "system",
           })}
           showRecentTransactions={true}
-          coolMode
+          // coolMode
         >
           {children}
         </RainbowKitProvider>

@@ -7,6 +7,12 @@ const nextConfig = {
       "images.pexels.com", // Pexels
       "res.cloudinary.com", // Cloudinary
     ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
   },
 };
 

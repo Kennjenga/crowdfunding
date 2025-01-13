@@ -10,6 +10,7 @@ export function useGetCampaign(campaignId: bigint) {
     abi: CROWDFUNDING_ABI,
     functionName: 'getCampaign',
     args: [campaignId],
+    chainId: 11155111,
   })
 }
 
@@ -19,6 +20,7 @@ export function useGetCampaignDonations(campaignId: bigint) {
     abi: CROWDFUNDING_ABI,
     functionName: 'getCampaignDonations',
     args: [campaignId],
+    chainId: 11155111,
   })
 }
 
@@ -41,18 +43,21 @@ export function useCrowdfunding() {
     address: CROWDFUNDING_ADDRESS,
     abi: CROWDFUNDING_ABI,
     functionName: 'getAllCampaigns',
+    chainId: 11155111,
   })
 
   const { data: totalCampaigns } = useReadContract({
     address: CROWDFUNDING_ADDRESS,
     abi: CROWDFUNDING_ABI,
     functionName: 'getTotalCampaigns',
+    chainId: 11155111,
   })
 
   const { data: totalActiveCampaigns } = useReadContract({
     address: CROWDFUNDING_ADDRESS,
     abi: CROWDFUNDING_ABI,
     functionName: 'getTotalActiveCampaigns',
+    chainId: 11155111,
   })
 
   // Get role bytes first

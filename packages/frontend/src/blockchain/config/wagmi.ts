@@ -1,5 +1,5 @@
 import { getDefaultConfig, getDefaultWallets } from '@rainbow-me/rainbowkit';
-import { mainnet, sepolia, polygon, arbitrum, base, optimism} from 'wagmi/chains';
+import { mainnet, sepolia, polygon, arbitrum, base, optimism } from 'wagmi/chains';
 import {
   argentWallet,
   trustWallet,

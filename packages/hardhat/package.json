@@ -1,8 +1,9 @@
 {
-  "name": "@lisk-scaffold-dapp/hardhat",
+  "name": "@crowdfunding-dapp/hardhat",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "author": "Kennjenga<kinyagia10@gmail.com>",
   "scripts": {
     "compile": "npx hardhat compile",
     "test": "npx hardhat test",
