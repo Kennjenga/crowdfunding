@@ -85,3 +85,43 @@ main()
 // Contract Address: 0x9b142de1EAa9a6699a8020CE898B18772945CE9D
 // Deployer Address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
 // Network: sepolia
+
+// campaignAMount
+// fury@Furiosa:~/E/crowdfunding/packages/hardhat$ yarn deploy:normal
+// yarn run v1.22.22
+// warning ../../../../package.json: No license field
+// $ npx hardhat run ./ignition/modules/deploy.js --network sepolia
+// Starting deployment process...
+// Contract factory created successfully
+// Deploying contract...
+// Contract deployment initiated
+// Waiting for deployment to be mined...
+// CrowdFunding Contract Deployed to: 0x8c2aB79Fe3084502D7D66411e608DdCE2C2A1911
+// Deployer address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
+// Granting CAMPAIGN_CREATOR_ROLE...
+// Granted CAMPAIGN_CREATOR_ROLE to: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
+
+// Deployment Summary:
+// --------------------
+// Contract Address: 0x8c2aB79Fe3084502D7D66411e608DdCE2C2A1911
+// Deployer Address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
+// Network: sepolia
+// Done in 22.50s.
+
+// target Reached
+// Starting deployment process...
+// Contract factory created successfully
+// Deploying contract...
+// Contract deployment initiated
+// Waiting for deployment to be mined...
+// CrowdFunding Contract Deployed to: 0x4633F7bf85223122a46Cdacb60239A03197d9c3c
+// Deployer address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
+// Granting CAMPAIGN_CREATOR_ROLE...
+// Granted CAMPAIGN_CREATOR_ROLE to: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
+
+// Deployment Summary:
+// --------------------
+// Contract Address: 0x4633F7bf85223122a46Cdacb60239A03197d9c3c
+// Deployer Address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
+// Network: sepolia
+// Done in 20.59s.

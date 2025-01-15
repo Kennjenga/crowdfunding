@@ -224,15 +224,15 @@ describe("CrowdFunding", function () {
       ).to.be.revertedWith("Campaign has ended");
     });
 
-    it("Should complete campaign when target is reached", async function () {
+    it("Should target Reached campaign when target is reached", async function () {
       await expect(
         crowdFunding.connect(donor).donateToCampaign(0, { value: toWei("1") })
       )
-        .to.emit(crowdFunding, "CampaignCompleted")
+        .to.emit(crowdFunding, "CampaignTargetReached")
         .withArgs(0, toWei("1"));
 
       const campaigns = await crowdFunding.getAllCampaigns();
-      expect(campaigns[0].isCompleted).to.be.true;
+      expect(campaigns[0].targetReached).to.be.true;
     });
   });
 
@@ -344,7 +344,7 @@ describe("CrowdFunding", function () {
         ).to.be.revertedWith("Not campaign owner");
       });
 
-      it("Should prevent withdrawals before deadline unless completed", async function () {
+      it("Should prevent withdrawals before deadline unless completed or target reached", async function () {
         await expect(
           crowdFunding.connect(creator).withdrawFunds(0)
         ).to.be.revertedWith("Campaign is still active");

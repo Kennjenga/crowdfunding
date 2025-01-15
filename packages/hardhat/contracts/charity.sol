@@ -19,11 +19,13 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         string description;
         uint256 targetAmount;
         uint256 raisedAmount;
+        uint256 completedAmount;
         address owner;
         uint256 deadline;
         bool isCompleted;
         bool fundsWithdrawn;
         bool isDeleted;
+        bool targetReached;
     }
 
     struct Donation {
@@ -54,6 +56,10 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         uint256 amount
     );
     event CampaignCompleted(uint256 indexed campaignId, uint256 totalRaised);
+    event CampaignTargetReached(
+        uint256 indexed campaignId,
+        uint256 totalRaised
+    );
     event CampaignDeleted(
         uint256 indexed campaignId,
         address indexed deletedBy
@@ -103,11 +109,13 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
             description: description,
             targetAmount: targetAmountInEther,
             raisedAmount: 0,
+            completedAmount: 0,
             owner: msg.sender,
             deadline: block.timestamp + (durationInDays * 1 days),
             isCompleted: false,
             fundsWithdrawn: false,
-            isDeleted: false
+            isDeleted: false,
+            targetReached: false
         });
 
         emit CampaignCreated(
@@ -131,8 +139,15 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         campaignNotDeleted(campaignId)
     {
         Campaign storage campaign = campaigns[campaignId];
+
+        // Check if the campaign deadline has passed
+        if (block.timestamp >= campaign.deadline) {
+            campaign.isCompleted = true; // Mark the campaign as completed
+            emit CampaignCompleted(campaignId, campaign.raisedAmount);
+            revert("Campaign has ended"); // Prevent further donations
+        }
+
         require(!campaign.isCompleted, "Campaign is already completed");
-        require(block.timestamp < campaign.deadline, "Campaign has ended");
         require(msg.value > 0, "Donation must be greater than 0");
 
         campaign.raisedAmount += msg.value;
@@ -145,13 +160,12 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
                 timestamp: block.timestamp
             })
         );
+        if (campaign.raisedAmount >= campaign.targetAmount) {
+            campaign.targetReached = true;
+            emit CampaignTargetReached(campaignId, campaign.raisedAmount);
+        }
 
         emit DonationReceived(campaignId, msg.sender, msg.value);
-
-        if (campaign.raisedAmount >= campaign.targetAmount) {
-            campaign.isCompleted = true;
-            emit CampaignCompleted(campaignId, campaign.raisedAmount);
-        }
     }
 
     function withdrawFunds(
@@ -167,11 +181,13 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         require(!campaign.fundsWithdrawn, "Funds already withdrawn");
         require(campaign.raisedAmount > 0, "No funds to withdraw");
         require(
-            block.timestamp >= campaign.deadline || campaign.isCompleted,
+            block.timestamp >= campaign.deadline ||
+                (campaign.isCompleted || campaign.targetReached),
             "Campaign is still active"
         );
 
         uint256 amount = campaign.raisedAmount;
+        campaign.completedAmount = amount;
         campaign.raisedAmount = 0;
         campaign.fundsWithdrawn = true;
 

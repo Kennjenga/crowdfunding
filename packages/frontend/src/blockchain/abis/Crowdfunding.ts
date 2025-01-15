@@ -89,6 +89,25 @@ export const CROWDFUNDING_ABI =  [
         "type": "uint256"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalRaised",
+        "type": "uint256"
+      }
+    ],
+    "name": "CampaignTargetReached",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "campaignId",
+        "type": "uint256"
+      },
+      {
         "indexed": true,
         "internalType": "address",
         "name": "donor",
@@ -332,6 +351,11 @@ export const CROWDFUNDING_ABI =  [
             "type": "uint256"
           },
           {
+            "internalType": "uint256",
+            "name": "completedAmount",
+            "type": "uint256"
+          },
+          {
             "internalType": "address",
             "name": "owner",
             "type": "address"
@@ -354,6 +378,11 @@ export const CROWDFUNDING_ABI =  [
           {
             "internalType": "bool",
             "name": "isDeleted",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "targetReached",
             "type": "bool"
           }
         ],
@@ -408,6 +437,11 @@ export const CROWDFUNDING_ABI =  [
             "type": "uint256"
           },
           {
+            "internalType": "uint256",
+            "name": "completedAmount",
+            "type": "uint256"
+          },
+          {
             "internalType": "address",
             "name": "owner",
             "type": "address"
@@ -430,6 +464,11 @@ export const CROWDFUNDING_ABI =  [
           {
             "internalType": "bool",
             "name": "isDeleted",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "targetReached",
             "type": "bool"
           }
         ],
@@ -684,4 +723,7 @@ export const CROWDFUNDING_ABI =  [
   }
 ]
 
-export const CROWDFUNDING_ADDRESS = "0x9b142de1EAa9a6699a8020CE898B18772945CE9D"
+
+export const CROWDFUNDING_ADDRESS =  "0x4633F7bf85223122a46Cdacb60239A03197d9c3c"
+// "0x8c2aB79Fe3084502D7D66411e608DdCE2C2A1911"
+// "0x9b142de1EAa9a6699a8020CE898B18772945CE9D"

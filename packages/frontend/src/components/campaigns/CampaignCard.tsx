@@ -11,9 +11,12 @@ interface CampaignCardProps {
     description: string;
     targetAmount: bigint;
     raisedAmount: bigint;
+    completedAmount: bigint;
     deadline: bigint;
     isCompleted: boolean;
     owner: string;
+    fundsWithdrawn: boolean;
+    targetReached: boolean;
   };
 }
 
@@ -24,7 +27,14 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
   const { data: ensAvatar } = useEnsAvatar({ name: ensName || "" });
 
   const progress =
-    (Number(campaign.raisedAmount) / Number(campaign.targetAmount)) * 100;
+    (Number(
+      (campaign.isCompleted || campaign.targetReached) &&
+        campaign.fundsWithdrawn
+        ? campaign.completedAmount
+        : campaign.raisedAmount
+    ) /
+      Number(campaign.targetAmount)) *
+    100;
 
   return (
     <div className="glass-card p-6 flex flex-col justify-between h-full">
@@ -78,7 +88,11 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
 
         <div className="flex justify-between text-sm">
           <span className="text-purple-700">
-            {formatEther(campaign.raisedAmount)} ETH raised
+            {(campaign.isCompleted || campaign.targetReached) &&
+            campaign.fundsWithdrawn
+              ? formatEther(campaign.completedAmount)
+              : formatEther(campaign.raisedAmount)}{" "}
+            ETH raised
           </span>
           <span className="text-purple-900 font-medium">
             {Math.round(progress)}%

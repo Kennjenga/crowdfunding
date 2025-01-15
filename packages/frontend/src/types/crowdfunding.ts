@@ -3,18 +3,20 @@ import { formatUnits } from "ethers";
 
 // types/crowdfunding.ts
 export interface Campaign {
-  fundsWithdrawn: bigint;
   id: bigint;
   title: string;
   image_url: string;
   description: string;
   targetAmount: bigint;
   raisedAmount: bigint;
+  completedAmount: bigint;
   owner: string;
   isCompleted: boolean;
+  fundsWithdrawn: boolean;
   createdAt: bigint;
   deadline: bigint;
   isDeleted: boolean;
+  targetReached: boolean;
 }
 
 export interface Donation {

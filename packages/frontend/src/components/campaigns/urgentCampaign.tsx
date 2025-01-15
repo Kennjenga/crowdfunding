@@ -61,7 +61,9 @@ export function UrgentCampaign() {
     if (campaigns && campaigns.length > 0) {
       const now = Math.floor(Date.now() / 1000); // Current time in seconds (UNIX timestamp)
       const sortedCampaigns = campaigns
-        .filter((campaign) => campaign.deadline > now) // Only include active campaigns
+        .filter(
+          (campaign) => campaign.deadline > now && !campaign.isCompleted // Only include active and incomplete campaigns
+        )
         .sort((a, b) => Number(a.deadline) - Number(b.deadline)) // Sort by closest deadline
         .slice(0, 4); // Limit to the top 4 urgent campaigns
 
