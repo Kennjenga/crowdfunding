@@ -1,9 +1,14 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { formatEther, parseEther } from "ethers";
+import {
+  CROWDFUNDING_ABI,
+  CROWDFUNDING_ADDRESS,
+} from "@/blockchain/abis/Crowdfunding";
+
 import {
   useCrowdfunding,
   useGetCampaign,
@@ -12,6 +17,7 @@ import {
 import { Campaign } from "@/types/crowdfunding";
 import Navbar from "@/components/navbar";
 import Image from "next/image";
+import { useContractEvent } from "@/blockchain/hooks/useContractEvent";
 
 export default function CampaignPage() {
   const params = useParams();
@@ -19,19 +25,112 @@ export default function CampaignPage() {
   const { address } = useAccount();
   const campaignId = BigInt(params.id as string);
 
-  const { data } = useGetCampaign(campaignId);
-  const donationsObjectData = useGetCampaignDonations(campaignId); // Fetch donations
-  const donationsData = donationsObjectData.data as Array<{
+  const { data, refetch: refetchCampaign } = useGetCampaign(campaignId);
+  const { data: donationsObjectData, refetch: refetchDonations } =
+    useGetCampaignDonations(campaignId);
+
+  const donationsData = donationsObjectData as Array<{
     donor: string;
     amount: string;
   }>;
-  // console.log(donationsData);
+
   const campaign = data as Campaign;
   const { isAdmin, donateToCampaign, withdrawFunds, deleteCampaign } =
     useCrowdfunding();
 
   const [donationAmount, setDonationAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Set up polling for regular updates
+  useEffect(() => {
+    const pollInterval = setInterval(() => {
+      refetchCampaign();
+      refetchDonations();
+    }, 3600000); // Poll every 1 hour
+
+    return () => clearInterval(pollInterval);
+  }, [refetchCampaign, refetchDonations]);
+
+  // Listen for DonationReceived events
+  useContractEvent({
+    address: CROWDFUNDING_ADDRESS,
+    abi: CROWDFUNDING_ABI,
+    eventName: "DonationReceived",
+    listener(log: any) {
+      const { campaignId: eventCampaignId } = log.args;
+      if (eventCampaignId === campaignId) {
+        refetchCampaign();
+        refetchDonations();
+      }
+    },
+  });
+
+  // Listen for FundsWithdrawn events
+  useContractEvent({
+    address: CROWDFUNDING_ADDRESS,
+    abi: CROWDFUNDING_ABI,
+    eventName: "FundsWithdrawn",
+    listener(log: any) {
+      const { campaignId: eventCampaignId } = log.args;
+      if (eventCampaignId === campaignId) {
+        refetchCampaign();
+      }
+    },
+  });
+
+  // Listen for CampaignCompleted events
+  useContractEvent({
+    address: CROWDFUNDING_ADDRESS,
+    abi: CROWDFUNDING_ABI,
+    eventName: "CampaignCompleted",
+    listener(log: any) {
+      const { campaignId: eventCampaignId } = log.args;
+      if (eventCampaignId === campaignId) {
+        refetchCampaign();
+      }
+    },
+  });
+
+  const handleDonate = async () => {
+    try {
+      setIsLoading(true);
+      await donateToCampaign(campaignId, parseEther(donationAmount));
+      setDonationAmount("");
+      // Refetch immediately after donation
+      await Promise.all([refetchCampaign(), refetchDonations()]);
+    } catch (error) {
+      console.error("Error donating:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    try {
+      setIsLoading(true);
+      await withdrawFunds(campaignId);
+      // Refetch immediately after withdrawal
+      await refetchCampaign();
+    } catch (error) {
+      console.error("Error withdrawing:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this campaign?")) {
+      try {
+        setIsLoading(true);
+        await deleteCampaign(campaignId);
+        router.push("/");
+      } catch (error) {
+        console.error("Error deleting:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
   if (!campaign) {
     return (
@@ -49,29 +148,6 @@ export default function CampaignPage() {
     isOwner && campaign.targetReached && !campaign.fundsWithdrawn
   );
 
-  const handleDonate = async () => {
-    try {
-      setIsLoading(true);
-      await donateToCampaign(campaignId, parseEther(donationAmount));
-      setDonationAmount("");
-    } catch (error) {
-      console.error("Error donating:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleWithdraw = async () => {
-    try {
-      setIsLoading(true);
-      await withdrawFunds(campaignId);
-    } catch (error) {
-      console.error("Error withdrawing:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // console.log(campaign);
   const progress =
     (Number(
@@ -82,20 +158,6 @@ export default function CampaignPage() {
     ) /
       Number(campaign.targetAmount)) *
     100;
-
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this campaign?")) {
-      try {
-        setIsLoading(true);
-        await deleteCampaign(campaignId);
-        router.push("/");
-      } catch (error) {
-        console.error("Error deleting:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
 
   return (
     <div className="min-h-screen">
@@ -201,7 +263,7 @@ export default function CampaignPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Raised</p>
-                    <p className="text-2xl font-bold text-purple-900">
+                    <p className="text-xl font-bold text-purple-900">
                       {(campaign.targetReached || campaign.isCompleted) &&
                       campaign.fundsWithdrawn
                         ? formatEther(campaign.completedAmount)
@@ -211,7 +273,7 @@ export default function CampaignPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Target</p>
-                    <p className="text-2xl font-bold text-purple-900">
+                    <p className="text-xl font-bold text-purple-900">
                       {formatEther(campaign.targetAmount)} ETH
                     </p>
                   </div>

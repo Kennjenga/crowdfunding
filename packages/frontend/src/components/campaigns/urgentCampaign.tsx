@@ -6,46 +6,37 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { QueryObserverResult } from "@tanstack/react-query";
 import { ReadContractErrorType } from "viem";
+import { Campaign } from "@/types/crowdfunding";
 
 export function UrgentCampaign() {
   const { campaigns, refetchCampaigns } = useCrowdfunding() as {
-    campaigns: Array<{
-      id: string;
-      title: string;
-      image_url: string;
-      description: string;
-      targetAmount: bigint;
-      raisedAmount: bigint;
-      deadline: bigint;
-      isCompleted: boolean;
-      owner: string;
-    }>;
+    campaigns: Campaign[];
     refetchCampaigns: () => Promise<
       QueryObserverResult<unknown, ReadContractErrorType>
     >;
   };
 
   const [loading, setLoading] = useState(true);
-  const [urgentCampaigns, setUrgentCampaigns] = useState<
-    Array<{
-      id: string;
-      title: string;
-      image_url: string;
-      description: string;
-      targetAmount: bigint;
-      raisedAmount: bigint;
-      deadline: bigint;
-      isCompleted: boolean;
-      owner: string;
-    }>
-  >([]);
+  const [urgentCampaigns, setUrgentCampaigns] = useState<Campaign[]>([]);
+  const [currentTimestamp, setCurrentTimestamp] = useState(
+    Math.floor(Date.now() / 1000)
+  );
 
-  // Fetch campaigns on component mount
+  // Update current timestamp every minute
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTimestamp(Math.floor(Date.now() / 1000));
+    }, 60000); // Update every minute
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Fetch campaigns on component mount and periodically
   useEffect(() => {
     const fetchCampaigns = async () => {
       setLoading(true);
       try {
-        await refetchCampaigns(); // Fetch campaigns from the blockchain
+        await refetchCampaigns();
       } catch (error) {
         console.error("Error fetching campaigns:", error);
       } finally {
@@ -54,22 +45,45 @@ export function UrgentCampaign() {
     };
 
     fetchCampaigns();
+
+    // Refetch campaigns every 5 minutes
+    const intervalId = setInterval(fetchCampaigns, 300000);
+
+    return () => clearInterval(intervalId);
   }, [refetchCampaigns]);
 
-  // Find the most urgent campaigns
+  // Update urgent campaigns when either campaigns or current timestamp changes
   useEffect(() => {
     if (campaigns && campaigns.length > 0) {
-      const now = Math.floor(Date.now() / 1000); // Current time in seconds (UNIX timestamp)
-      const sortedCampaigns = campaigns
-        .filter(
-          (campaign) => campaign.deadline > now && !campaign.isCompleted // Only include active and incomplete campaigns
-        )
-        .sort((a, b) => Number(a.deadline) - Number(b.deadline)) // Sort by closest deadline
-        .slice(0, 4); // Limit to the top 4 urgent campaigns
+      const filterAndSortCampaigns = () => {
+        const activeCampaigns = campaigns
+          .filter(
+            (campaign) =>
+              Number(campaign.deadline) > currentTimestamp && // Use currentTimestamp instead of now
+              !campaign.isCompleted &&
+              !campaign.fundsWithdrawn &&
+              Number(campaign.raisedAmount) < Number(campaign.targetAmount)
+          )
+          .sort((a, b) => {
+            // Calculate remaining time for each campaign
+            const timeLeftA = Number(a.deadline) - currentTimestamp;
+            const timeLeftB = Number(b.deadline) - currentTimestamp;
 
-      setUrgentCampaigns(sortedCampaigns);
+            // Sort by time remaining and progress ratio
+            const progressA = Number(a.raisedAmount) / Number(a.targetAmount);
+            const progressB = Number(b.raisedAmount) / Number(b.targetAmount);
+
+            // Prioritize campaigns closer to deadline with higher progress
+            return timeLeftA - timeLeftB || progressB - progressA;
+          })
+          .slice(0, 4);
+
+        setUrgentCampaigns(activeCampaigns);
+      };
+
+      filterAndSortCampaigns();
     }
-  }, [campaigns]);
+  }, [campaigns, currentTimestamp]); // Depend on both campaigns and currentTimestamp
 
   if (loading) {
     return (
@@ -95,7 +109,6 @@ export function UrgentCampaign() {
 
   return (
     <div className="p-4">
-      {/* Urgent Campaign Section */}
       {urgentCampaigns.length > 0 && (
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-purple-900 mb-4">

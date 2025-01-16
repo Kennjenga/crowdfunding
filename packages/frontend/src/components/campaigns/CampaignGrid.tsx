@@ -8,21 +8,11 @@ import { QueryObserverResult } from "@tanstack/react-query";
 import { ReadContractErrorType } from "viem";
 import { Search } from "lucide-react";
 import { useAccount } from "wagmi";
+import { Campaign } from "@/types/crowdfunding";
 
 export function CampaignGrid() {
   const { campaigns, refetchCampaigns } = useCrowdfunding() as {
-    campaigns: Array<{
-      id: string;
-      title: string;
-      image_url: string;
-      description: string;
-      targetAmount: bigint;
-      raisedAmount: bigint;
-      completedAmount: bigint;
-      deadline: bigint;
-      isCompleted: boolean;
-      owner: string;
-    }>;
+    campaigns: Campaign[];
     refetchCampaigns: () => Promise<
       QueryObserverResult<unknown, ReadContractErrorType>
     >;
@@ -168,27 +158,71 @@ export function CampaignGrid() {
           </p>
         </div>
       </div> */}
-
-      {/* Search and Filter Section */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-grow">
-          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5 z-10" />
+      {/*  Search and Filter Section */}
+      <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between p-4 bg-white/20 backdrop-blur-sm rounded-xl">
+        {/* Search Bar Container */}
+        <div className="relative flex-grow lg:max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
           <input
             type="text"
             placeholder="Search by title or address..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-4 pr-10 py-2 rounded-lg bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-purple-900 placeholder-purple-400"
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white/50 backdrop-blur-sm 
+                 focus:outline-none focus:ring-2 focus:ring-purple-500 
+                 text-purple-900 placeholder-purple-400
+                 transition-all duration-200 ease-in-out"
           />
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <FilterButton label="All" value="all" />
-          <FilterButton label="Active" value="active" />
-          <FilterButton label="Completed" value="completed" />
-          <FilterButton label="My Campaigns" value="myCampaigns" />
+
+        {/* Filter Buttons Container */}
+        <div className="flex flex-wrap gap-2 justify-start lg:justify-end">
+          <button
+            onClick={() => setFilter("all")}
+            className={`px-4 py-2 rounded-lg transition-all duration-200 ease-in-out text-sm font-medium
+                 ${
+                   filter === "all"
+                     ? "bg-purple-600 text-white shadow-lg shadow-purple-500/30"
+                     : "bg-white/50 hover:bg-white/70 text-purple-900 hover:shadow-md"
+                 }`}
+          >
+            All Campaigns
+          </button>
+          <button
+            onClick={() => setFilter("active")}
+            className={`px-4 py-2 rounded-lg transition-all duration-200 ease-in-out text-sm font-medium
+                 ${
+                   filter === "active"
+                     ? "bg-purple-600 text-white shadow-lg shadow-purple-500/30"
+                     : "bg-white/50 hover:bg-white/70 text-purple-900 hover:shadow-md"
+                 }`}
+          >
+            Active
+          </button>
+          <button
+            onClick={() => setFilter("completed")}
+            className={`px-4 py-2 rounded-lg transition-all duration-200 ease-in-out text-sm font-medium
+                 ${
+                   filter === "completed"
+                     ? "bg-purple-600 text-white shadow-lg shadow-purple-500/30"
+                     : "bg-white/50 hover:bg-white/70 text-purple-900 hover:shadow-md"
+                 }`}
+          >
+            Completed
+          </button>
+          <button
+            onClick={() => setFilter("myCampaigns")}
+            className={`px-4 py-2 rounded-lg transition-all duration-200 ease-in-out text-sm font-medium
+                 ${
+                   filter === "myCampaigns"
+                     ? "bg-purple-600 text-white shadow-lg shadow-purple-500/30"
+                     : "bg-white/50 hover:bg-white/70 text-purple-900 hover:shadow-md"
+                 }`}
+          >
+            My Campaigns
+          </button>
         </div>
       </div>
-
       {/* Campaigns Grid */}
       {!currentCampaigns || currentCampaigns.length === 0 ? (
         <div className="flex items-center justify-center py-12">

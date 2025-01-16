@@ -190,6 +190,7 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         campaign.completedAmount = amount;
         campaign.raisedAmount = 0;
         campaign.fundsWithdrawn = true;
+        campaign.isCompleted = true; // Add this line to mark campaign as completed
 
         (bool success, ) = payable(campaign.owner).call{value: amount}("");
         require(success, "Withdrawal failed");

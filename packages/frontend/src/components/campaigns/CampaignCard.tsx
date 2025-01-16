@@ -5,7 +5,7 @@ import Image from "next/image";
 
 interface CampaignCardProps {
   campaign: {
-    id: string;
+    id: bigint;
     title: string;
     image_url: string; // Image URL for the campaign
     description: string;
