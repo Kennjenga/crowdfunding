@@ -51,6 +51,8 @@ export function CampaignGrid() {
     (campaign) => !campaign.isCompleted
   ).length;
 
+  console.log(campaigns);
+
   const filteredCampaigns = campaigns?.filter((campaign) => {
     const searchLower = searchTerm.toLowerCase().trim();
     const campaignTitle = campaign.title.toLowerCase();
