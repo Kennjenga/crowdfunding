@@ -13,3 +13,57 @@ npx hardhat ignition deploy ./ignition/modules/deploy.js || npx hardhat run ./ig
 npx hardhat verify --network lisk-sepolia <deployed address>
 
 ```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js
+- npm or yarn
+- Hardhat
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/repo.git
+cd repo
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+### Running the DApp
+
+1. Compile the smart contracts:
+
+```bash
+npx run compile
+```
+
+2. Deploy the smart contracts:
+
+```bash
+npm run deploy:normal
+```
+
+### Testing
+
+To run the tests for the smart contracts, use the following command:
+
+```bash
+npm run test
+```
+
+#### set up .env
+
+ALCHEMY_API_KEY_SEPOLIA =
+WALLET_PRIVATE_KEY =
+
+resources:
+https://www.youtube.com/watch?v=VEm5hzGSvVg
+https://wagmi.sh/react/getting-started

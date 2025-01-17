@@ -2,6 +2,8 @@
 
 Pamoja is a decentralized crowdfunding application built on Solidity and deployed using Hardhat. The frontend is developed using Next.js.
 
+![Pamoja DApp Screenshot](./packages//frontend/public/display.png)
+
 ## Folder Structure
 
 - **/packages/contracts**: Contains the Solidity smart contracts for the Pamoja DApp.
@@ -11,60 +13,66 @@ Pamoja is a decentralized crowdfunding application built on Solidity and deploye
 
 ## Getting Started
 
-### Prerequisites
+### Technical Stack
 
-- Node.js
-- npm or yarn
-- Hardhat
+- **Frontend**: Next.js
+- **UI Components**: Lucide React
+- **Blockchain Development**: Hardhat + Remix
+- **Blockchain Deployment**: Ethereum Sepolia
+- **Smart Contract**: Solidity
+- **Web3 Integration**: Ether.js
 
-### Installation
+### Main Contract Features
 
-1. Clone the repository:
+- Create and manage fundraising campaigns
+- Accept donations in ETH
+- Multi-admin support for campaign management
+- Secure donation handling and fund management
+- Automated campaign completion on target achievement and date expiry
+- Campaign lifecycle management (active, completed, deleted)
+- Complete transparency with on-chain tracking of donations and withdrawals
+- Campaign cancellation protection when funds are raised
 
-```bash
-git clone https://github.com/yourusername/pamoja.git
-cd pamoja
-```
+## Development Setup
+
+### Setup
+
+1. Clone this repository:
+
+   ```bash
+   git clone <repository-url>
+   cd <repository-folder>
+   cd packages/frontend
+   ```
 
 2. Install dependencies:
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
-### Running the DApp
+3. Run the development server:
 
-1. Compile the smart contracts:
+   ```bash
+   npm run dev
+   ```
 
-```bash
-npx run compile
-```
+4. Configure blockchain ABI using your contracts ABI and contract address.
 
-2. Deploy the smart contracts:
+## Contributing
 
-```bash
-npm run deploy:normal
-```
+We welcome contributions! Please follow these steps:
 
-3. Navigate to the `frontend` directory and install dependencies:
+1. Fork the repository
+2. Create a feature branch
+3. Commit changes
+4. Submit a pull request
 
-```bash
-cd /packages/frontend
-npm install
-```
+## License
 
-4. Run the Next.js development server:
+MIT License
 
-```bash
-npm run dev
-```
+## Appendices
 
-6. Open your browser and navigate to `http://localhost:3000` to interact with the Pamoja DApp.
-
-### Testing
-
-To run the tests for the smart contracts, use the following command:
-
-```bash
-npm run test
-```
+- **Smartcontract Repo**: [Link](https://github.com/Kennjenga/crowdfunding/)
+- **Undugu Live**: [Link](https://pamoja-iota.vercel.app/)

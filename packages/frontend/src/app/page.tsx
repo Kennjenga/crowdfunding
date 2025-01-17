@@ -90,12 +90,12 @@ export default function Home() {
           <div className="space-y-4">
             <details className="p-4 lg:p-6 bg-white rounded-2xl shadow-lg">
               <summary className="font-semibold text-purple-900 cursor-pointer flex justify-between items-center">
-                Is My Donation Tax Deductible?
+                What Is A Urgent Campaign?
                 <ChevronDown className="text-orange-500" />
               </summary>
               <p className="mt-4 text-purple-700">
-                Most donations on our platform are tax-deductible. We provide
-                donation receipts for your records.
+                An urgent campaign are the ones that close to the deadline and
+                they have not yet met their target amount.
               </p>
             </details>
             <details className="p-4 lg:p-6 bg-white rounded-2xl shadow-lg">
@@ -104,18 +104,17 @@ export default function Home() {
                 <ChevronDown className="text-orange-500" />
               </summary>
               <p className="mt-4 text-purple-700">
-                Your donation goes directly to the campaign you choose, minus a
-                small platform fee for operational costs.
+                Your donation goes directly to the campaign you choose.
               </p>
             </details>
             <details className="p-4 lg:p-6 bg-white rounded-2xl shadow-lg">
               <summary className="font-semibold text-purple-900 cursor-pointer flex justify-between items-center">
-                Can I Set Up A Recurring Donation?
+                How can I Set Up A Donation?
                 <ChevronDown className="text-orange-500" />
               </summary>
               <p className="mt-4 text-purple-700">
-                Yes, you can set up monthly recurring donations to support your
-                favorite causes consistently.
+                Go to the how it works page follow the instructions and your
+                address will be permitted to create a campaign
               </p>
             </details>
           </div>
