@@ -80,11 +80,10 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         _;
     }
 
-    // Modify createCampaign to include image_url
     function createCampaign(
         string memory title,
         string memory description,
-        string memory image_url, // Added this parameter
+        string memory image_url,
         uint256 targetAmountInEther,
         uint256 durationInDays
     ) external onlyRole(CAMPAIGN_CREATOR_ROLE) returns (uint256) {
@@ -105,7 +104,7 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         campaigns[campaignId] = Campaign({
             id: campaignId,
             title: title,
-            image_url: image_url, // Added this field
+            image_url: image_url,
             description: description,
             targetAmount: targetAmountInEther,
             raisedAmount: 0,
@@ -140,11 +139,10 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
     {
         Campaign storage campaign = campaigns[campaignId];
 
-        // Check if the campaign deadline has passed
         if (block.timestamp >= campaign.deadline) {
-            campaign.isCompleted = true; // Mark the campaign as completed
+            campaign.isCompleted = true;
             emit CampaignCompleted(campaignId, campaign.raisedAmount);
-            revert("Campaign has ended"); // Prevent further donations
+            revert("Campaign has ended");
         }
 
         require(!campaign.isCompleted, "Campaign is already completed");
@@ -160,6 +158,7 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
                 timestamp: block.timestamp
             })
         );
+
         if (campaign.raisedAmount >= campaign.targetAmount) {
             campaign.targetReached = true;
             emit CampaignTargetReached(campaignId, campaign.raisedAmount);
@@ -185,14 +184,11 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
             "Campaign is still active"
         );
 
-        if (block.timestamp >= campaign.deadline) {
-            campaign.isCompleted = true;
-        }
-
         uint256 amount = campaign.raisedAmount;
         campaign.completedAmount = amount;
         campaign.raisedAmount = 0;
         campaign.fundsWithdrawn = true;
+        campaign.isCompleted = true;
 
         (bool success, ) = payable(campaign.owner).call{value: amount}("");
         require(success, "Withdrawal failed");
@@ -215,7 +211,6 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         );
 
         campaign.isDeleted = true;
-
         campaign.title = "";
         campaign.description = "";
         campaign.targetAmount = 0;
