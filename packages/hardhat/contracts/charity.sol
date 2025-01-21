@@ -139,6 +139,7 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
     {
         Campaign storage campaign = campaigns[campaignId];
 
+        // Automatically mark campaign as completed if the deadline has passed
         if (block.timestamp >= campaign.deadline) {
             campaign.isCompleted = true;
             emit CampaignCompleted(campaignId, campaign.raisedAmount);
@@ -228,7 +229,14 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         campaignNotDeleted(campaignId)
         returns (Campaign memory)
     {
-        return campaigns[campaignId];
+        Campaign memory campaign = campaigns[campaignId];
+
+        // Automatically mark campaign as completed if the deadline has passed
+        if (block.timestamp >= campaign.deadline) {
+            campaign.isCompleted = true;
+        }
+
+        return campaign;
     }
 
     function getAllCampaigns() external view returns (Campaign[] memory) {
@@ -246,17 +254,23 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
         Campaign[] memory allCampaigns = new Campaign[](activeCampaigns);
         uint256 currentIndex = 0;
 
-        // Fill array with only active campaigns
+        // Fill array with all campaigns and dynamically check isCompleted
         for (uint256 i = 0; i < totalCampaigns; i++) {
             if (!campaigns[i].isDeleted) {
-                allCampaigns[currentIndex] = campaigns[i];
+                Campaign memory campaign = campaigns[i];
+
+                // Dynamically mark campaign as completed if the deadline has passed
+                if (block.timestamp >= campaign.deadline) {
+                    campaign.isCompleted = true;
+                }
+
+                allCampaigns[currentIndex] = campaign;
                 currentIndex++;
             }
         }
 
         return allCampaigns;
     }
-
     function getCampaignDonations(
         uint256 campaignId
     ) external view campaignExists(campaignId) returns (Donation[] memory) {
@@ -276,15 +290,16 @@ contract CrowdFunding is AccessControl, ReentrancyGuard {
 
     function getTotalActiveCampaigns() external view returns (uint256) {
         uint256 totalCampaigns = _campaignIds.current();
-        uint256 activeCampaigns = 0;
+        uint256 activeCampaignsCount = 0;
 
+        // Count campaigns that are not completed and not deleted
         for (uint256 i = 0; i < totalCampaigns; i++) {
-            if (!campaigns[i].isDeleted) {
-                activeCampaigns++;
+            if (!campaigns[i].isDeleted && !campaigns[i].isCompleted) {
+                activeCampaignsCount++;
             }
         }
 
-        return activeCampaigns;
+        return activeCampaignsCount;
     }
 
     function grantCampaignCreatorRole(

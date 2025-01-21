@@ -51,6 +51,8 @@ export default function CampaignPage() {
     return () => clearInterval(pollInterval);
   }, [refetchCampaign, refetchDonations]);
 
+  console.log(data);
+
   // Listen for DonationReceived events
   useContractEvent({
     address: CROWDFUNDING_ADDRESS,
@@ -145,7 +147,9 @@ export default function CampaignPage() {
   const isOwner = address === campaign.owner;
   const canManage: boolean = Boolean(isOwner || isAdmin);
   const canWithdraw: boolean = Boolean(
-    isOwner && campaign.targetReached && !campaign.fundsWithdrawn
+    isOwner &&
+      (campaign.targetReached || campaign.isCompleted) &&
+      !campaign.fundsWithdrawn
   );
 
   // console.log(campaign);

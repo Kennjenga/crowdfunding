@@ -241,6 +241,35 @@ describe("CrowdFunding", function () {
       await createCampaign(creator);
     });
 
+    describe("Campaign Completion", function () {
+      it("Should set isCompleted to true after the deadline", async function () {
+        // Ensure the campaign is not completed initially
+        let campaigns = await crowdFunding.getAllCampaigns();
+        expect(campaigns[0].isCompleted).to.be.false;
+
+        // Increase time to after the campaign deadline
+        await time.increase(31 * 24 * 60 * 60);
+
+        // Fetch the campaign again to trigger the dynamic update
+        const campaign = await crowdFunding.getCampaign(0);
+
+        // Check if isCompleted is now true
+        expect(campaign.isCompleted).to.be.true;
+      });
+
+      it("Should not allow donations after the deadline", async function () {
+        // Increase time to after the campaign deadline
+        await time.increase(31 * 24 * 60 * 60);
+
+        // Attempt to donate to the campaign
+        await expect(
+          crowdFunding
+            .connect(donor)
+            .donateToCampaign(0, { value: toWei("0.5") })
+        ).to.be.revertedWith("Campaign has ended");
+      });
+    });
+
     describe("Campaign Deletion", function () {
       it("Should allow campaign owner to delete campaign when no funds exist", async function () {
         await expect(crowdFunding.connect(creator).deleteCampaign(0))

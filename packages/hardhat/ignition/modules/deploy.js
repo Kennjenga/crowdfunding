@@ -53,37 +53,35 @@ main()
     process.exit(1);
   });
 
-// campaign compeleted
 // Starting deployment process...
 // Contract factory created successfully
 // Deploying contract...
 // Contract deployment initiated
 // Waiting for deployment to be mined...
-// CrowdFunding Contract Deployed to: 0x62eDA47a43A9B69C0c4bDEA54A0630A5Cf3A79AE
+// CrowdFunding Contract Deployed to: 0x8F8cd2EB75e58ab96b102cb9aB50f977Ffc9F2Bf
 // Deployer address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
 // Granting CAMPAIGN_CREATOR_ROLE...
 // Granted CAMPAIGN_CREATOR_ROLE to: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
 
 // Deployment Summary:
 // --------------------
-// Contract Address: 0x62eDA47a43A9B69C0c4bDEA54A0630A5Cf3A79AE
+// Contract Address: 0x8F8cd2EB75e58ab96b102cb9aB50f977Ffc9F2Bf
 // Deployer Address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
 // Network: sepolia
-// Done in 20.11s.
+// Done in 17.73s.
 
 // Starting deployment process...
 // Contract factory created successfully
 // Deploying contract...
 // Contract deployment initiated
 // Waiting for deployment to be mined...
-// CrowdFunding Contract Deployed to: 0x66B1519086d8aD6bff6aaa211fD503dC2ef6c33F
+// CrowdFunding Contract Deployed to: 0x4B34Af5B48B4BCb15453fc9d6e13BfCd9546b2d1
 // Deployer address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
 // Granting CAMPAIGN_CREATOR_ROLE...
 // Granted CAMPAIGN_CREATOR_ROLE to: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
 
 // Deployment Summary:
 // --------------------
-// Contract Address: 0x66B1519086d8aD6bff6aaa211fD503dC2ef6c33F
+// Contract Address: 0x4B34Af5B48B4BCb15453fc9d6e13BfCd9546b2d1
 // Deployer Address: 0xC63Ee3b2ceF4857ba3EA8256F41d073C88696F99
 // Network: sepolia
-// Done in 22.93s.
