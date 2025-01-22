@@ -1,6 +1,6 @@
 # Pamoja Crowdfunding DApp
 
-Pamoja is a decentralized crowdfunding application built on Solidity and deployed using Hardhat. The frontend is developed using Next.js.
+Pamoja is a decentralized crowdfunding application built on the ethereum sepolia blockchain network. It allows for donors to contribute to their campaign of choice and allows control of creation campaigns to avoid fraudulent campaigns.
 
 ![Pamoja DApp Screenshot](./packages//frontend/public/display.png)
 
